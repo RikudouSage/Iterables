@@ -1,0 +1,23 @@
+{
+    "name": "rikudou/iterables",
+    "description": "Provides some cool iterable functions complementing the built-in array functions",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Rikudou\\Iterables\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Rikudou\\Tests\\Iterables\\": "tests/"
+        }
+    },
+    "minimum-stability": "stable",
+    "require": {
+        "php": "^8.3"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^11.2"
+    }
+}
