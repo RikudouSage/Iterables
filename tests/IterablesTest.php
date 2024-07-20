@@ -85,6 +85,33 @@ class IterablesTest extends TestCase
         );
     }
 
+    #[DataProvider('findData')]
+    public function testFindKey(iterable $iterable, callable $callback): void
+    {
+        $this->assertSame(
+            array_find_key($this->toArray($iterable), $callback),
+            Iterables::findKey($iterable, $callback),
+        );
+    }
+
+    #[DataProvider('findData')]
+    public function testAny(iterable $iterable, callable $callback): void
+    {
+        $this->assertSame(
+            array_any($this->toArray($iterable), $callback),
+            Iterables::any($iterable, $callback),
+        );
+    }
+
+    #[DataProvider('findData')]
+    public function testAll(iterable $iterable, callable $callback): void
+    {
+        $this->assertSame(
+            array_all($this->toArray($iterable), $callback),
+            Iterables::all($iterable, $callback),
+        );
+    }
+
     public function testCountCountable(): void
     {
         // real length is zero, but countable interface is implemented and it should take precedence
@@ -286,6 +313,12 @@ class IterablesTest extends TestCase
 
             yield 3;
         }), static fn (int $number) => $number === 2];
+
+        yield [[1, 2, 3], static fn (int $number) => $number < 10];
+
+        $random = random_int(0, 10);
+
+        yield [[4, 5, 6], static fn (int $number) => $number < $random];
     }
 
     private function toArray(iterable $iterable): array
