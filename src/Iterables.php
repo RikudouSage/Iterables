@@ -253,6 +253,28 @@ final readonly class Iterables
     }
 
     /**
+     * @template TKey
+     * @template TValue
+     * @template TArg
+     *
+     * @param iterable<TKey, TValue>|object                              $iterable
+     * @param callable(TValue, TKey, (TArg is null ? void : TArg)): void $callback
+     * @param TArg                                                       $arg
+     */
+    public static function walk(iterable|object $iterable, callable $callback, mixed $arg = null): true
+    {
+        foreach ($iterable as $key => $value) {
+            if ($arg === null) {
+                $callback($value, $key);
+            } else {
+                $callback($value, $key, $arg);
+            }
+        }
+
+        return true;
+    }
+
+    /**
      * @template InputType
      *
      * @param iterable<InputType> $iterable
