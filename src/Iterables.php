@@ -77,7 +77,7 @@ final readonly class Iterables
             $toPass = $mode === 0
                 ? [$value]
                 : (
-                $mode === ARRAY_FILTER_USE_KEY
+                    $mode === ARRAY_FILTER_USE_KEY
                     ? [$key]
                     : [$value, $key]
                 );
@@ -174,6 +174,82 @@ final readonly class Iterables
         }
 
         return $count;
+    }
+
+    /**
+     * @template InputTypeKey
+     * @template InputTypeValue
+     *
+     * @param iterable<InputTypeKey, InputTypeValue>       $iterable
+     * @param callable(InputTypeValue, InputTypeKey): bool $callback
+     *
+     * @return InputTypeValue|null
+     */
+    public static function find(iterable $iterable, callable $callback): mixed
+    {
+        foreach ($iterable as $key => $value) {
+            if ($callback($value, $key)) {
+                return $value;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * @template InputTypeKey
+     * @template InputTypeValue
+     *
+     * @param iterable<InputTypeKey, InputTypeValue>       $iterable
+     * @param callable(InputTypeValue, InputTypeKey): bool $callback
+     *
+     * @return InputTypeKey|null
+     */
+    public static function findKey(iterable $iterable, callable $callback): mixed
+    {
+        foreach ($iterable as $key => $value) {
+            if ($callback($value, $key)) {
+                return $key;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * @template InputTypeKey
+     * @template InputTypeValue
+     *
+     * @param iterable<InputTypeKey, InputTypeValue>       $iterable
+     * @param callable(InputTypeValue, InputTypeKey): bool $callback
+     */
+    public static function any(iterable $iterable, callable $callback): bool
+    {
+        foreach ($iterable as $key => $value) {
+            if ($callback($value, $key)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * @template InputTypeKey
+     * @template InputTypeValue
+     *
+     * @param iterable<InputTypeKey, InputTypeValue>       $iterable
+     * @param callable(InputTypeValue, InputTypeKey): bool $callback
+     */
+    public static function all(iterable $iterable, callable $callback): bool
+    {
+        foreach ($iterable as $key => $value) {
+            if (!$callback($value, $key)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     /**
