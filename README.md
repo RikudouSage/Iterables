@@ -58,3 +58,7 @@ you can still feed any iterable into it directly, which is nice.
 - `Iterables::contains()` -> `in_array()` - unlike the built-in version, this is strict by default
 - `Iterables::firstValue()` -> equivalent of `$array[array_key_first($array)]`
 - `Iterables::count()` -> `count()`
+- `Iterables::find()` -> `array_find()`
+- `Iterables::findKey()` -> `array_find_key()`
+- `Iterables::any()` -> `array_any()`
+- `Iterables::all()` -> `array_all()`
