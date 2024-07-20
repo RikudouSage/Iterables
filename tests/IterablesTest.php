@@ -76,6 +76,15 @@ class IterablesTest extends TestCase
         );
     }
 
+    #[DataProvider('findData')]
+    public function testFind(iterable $iterable, callable $callback): void
+    {
+        $this->assertSame(
+            array_find($this->toArray($iterable), $callback),
+            Iterables::find($iterable, $callback),
+        );
+    }
+
     public function testCountCountable(): void
     {
         // real length is zero, but countable interface is implemented and it should take precedence
@@ -250,6 +259,33 @@ class IterablesTest extends TestCase
         yield [[1, 2, 3]]; // 1
 
         yield [[]];
+    }
+
+    public static function findData(): iterable
+    {
+        yield [[1, 2, 3], static fn (int $number) => $number === 0];
+
+        yield [[1, 2, 3], static fn (int $number) => $number === 1];
+
+        yield [[1, 2, 3], static fn (int $number) => $number === 2];
+
+        yield [[1, 2, 3], static fn (int $number) => $number === 3];
+
+        yield [[1, 2, 3], static fn (int $number) => $number === 4];
+
+        yield [[1, 2, 3], static fn (int $number, int $key) => $key === 0];
+
+        yield [[1, 2, 3], static fn (int $number, int $key) => $key === 3];
+
+        yield [[1, 2, 3], static fn (string $number) => $number === '2'];
+
+        yield [new RewindableGenerator(static function () {
+            yield 1;
+
+            yield 2;
+
+            yield 3;
+        }), static fn (int $number) => $number === 2];
     }
 
     private function toArray(iterable $iterable): array
