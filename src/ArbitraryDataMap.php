@@ -62,6 +62,7 @@ final class ArbitraryDataMap implements IteratorAggregate, ArrayAccess, Countabl
 
     /**
      * @param TKey $offset
+     *
      * @return TValue
      */
     public function offsetGet(mixed $offset): mixed
@@ -71,7 +72,7 @@ final class ArbitraryDataMap implements IteratorAggregate, ArrayAccess, Countabl
             if (is_scalar($offset) || $offset instanceof Stringable) {
                 throw new RuntimeException("Invalid offset: {$offset}");
             } else {
-                throw new RuntimeException("Invalid offset: value omitted because it cannot be cast to a string");
+                throw new RuntimeException('Invalid offset: value omitted because it cannot be cast to a string');
             }
         }
 
@@ -79,7 +80,7 @@ final class ArbitraryDataMap implements IteratorAggregate, ArrayAccess, Countabl
     }
 
     /**
-     * @param TKey $offset
+     * @param TKey   $offset
      * @param TValue $value
      */
     public function offsetSet(mixed $offset, mixed $value): void

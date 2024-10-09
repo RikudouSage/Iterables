@@ -11,35 +11,35 @@ use stdClass;
 
 class ArbitraryDataMapTest extends TestCase
 {
-    public function testConstructorAndIterator()
+    public function testConstructorAndIterator(): void
     {
         $instance = new ArbitraryDataMap([1, 2, 3]);
-        self::assertSame([1, 2, 3], [...$instance]);
+        $this->assertSame([1, 2, 3], [...$instance]);
 
         $instance = new ArbitraryDataMap(['a' => 'b', 'c' => 'd']);
-        self::assertSame(['a' => 'b', 'c' => 'd'], [...$instance]);
+        $this->assertSame(['a' => 'b', 'c' => 'd'], [...$instance]);
 
         $objectStorage = new SplObjectStorage();
         $objectStorage[new stdClass()] = 'test';
         $instance = new ArbitraryDataMap($objectStorage);
-        self::assertCount(1, $instance);
-        self::assertInstanceOf(stdClass::class, $instance[0]);
+        $this->assertCount(1, $instance);
+        $this->assertInstanceOf(stdClass::class, $instance[0]);
     }
 
-    public function testArrayAccess()
+    public function testArrayAccess(): void
     {
         $instance = new ArbitraryDataMap();
-        self::assertFalse(isset($instance['hello']));
+        $this->assertFalse(isset($instance['hello']));
 
         $instance['hello'] = 'world';
-        self::assertTrue(isset($instance['hello']));
-        self::assertSame('world', $instance['hello']);
+        $this->assertTrue(isset($instance['hello']));
+        $this->assertSame('world', $instance['hello']);
 
         $instance['hello'] = 'world2';
-        self::assertSame('world2', $instance['hello']);
+        $this->assertSame('world2', $instance['hello']);
 
         unset($instance['hello']);
-        self::assertFalse(isset($instance['hello']));
+        $this->assertFalse(isset($instance['hello']));
         unset($instance['hello2']);
 
         $this->expectException(RuntimeException::class);
@@ -53,7 +53,7 @@ class ArbitraryDataMapTest extends TestCase
         if ($stringable) {
             $this->expectExceptionMessage("Invalid offset: {$key}");
         } else {
-            $this->expectExceptionMessage("Invalid offset: value omitted because it cannot be cast to a string");
+            $this->expectExceptionMessage('Invalid offset: value omitted because it cannot be cast to a string');
         }
 
         $instance = new ArbitraryDataMap();
@@ -63,16 +63,20 @@ class ArbitraryDataMapTest extends TestCase
     public static function exceptionData(): iterable
     {
         yield ['1', true];
+
         yield [1, true];
+
         yield [0.5, true];
+
         yield [null, true];
-        yield [new class
-        {
+
+        yield [new class () {
             public function __toString(): string
             {
                 return 'test';
             }
         }, true];
+
         yield [new stdClass(), false];
     }
 }

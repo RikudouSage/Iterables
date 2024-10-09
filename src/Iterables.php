@@ -261,6 +261,8 @@ final readonly class Iterables
      * @param iterable<TKey, TValue>|object                              $iterable
      * @param callable(TValue, TKey, (TArg is null ? null : TArg)): void $callback
      * @param TArg                                                       $arg
+     *
+     * @internal Not tested yet, not intended for public use
      */
     public static function walk(iterable|object $iterable, callable $callback, mixed $arg = null): true
     {
@@ -284,9 +286,11 @@ final readonly class Iterables
      * @template TPreserveKeys of bool
      *
      * @param iterable<TKey, TValue> $iterable
-     * @param TPreserveKeys $preserveKeys
+     * @param TPreserveKeys          $preserveKeys
      *
      * @return (TPreserveKeys is false ? iterable<int, TValue> : iterable<TKey, TValue>)
+     *
+     * @internal Not tested yet, not intended for public use
      */
     public static function slice(iterable $iterable, int $offset, ?int $length = null, bool $preserveKeys = false): iterable
     {
@@ -328,6 +332,7 @@ final readonly class Iterables
             if (!$values->valid()) {
                 throw new ValueError('Iterables::combine(): Argument #1 ($keys) and argument #2 ($values) must have the same number of elements');
             }
+
             yield $key => $values->current();
             $values->next();
         }

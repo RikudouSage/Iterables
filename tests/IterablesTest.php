@@ -9,7 +9,6 @@ use IteratorAggregate;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\DoesNotPerformAssertions;
 use ReflectionFunction;
-use ReflectionObject;
 use Rikudou\Iterables\CacheableGenerator;
 use Rikudou\Iterables\Iterables;
 use PHPUnit\Framework\TestCase;
@@ -137,16 +136,16 @@ class IterablesTest extends TestCase
     }
 
     #[DataProvider('combineData')]
-    public function testCombine(iterable $keys, iterable $values)
+    public function testCombine(iterable $keys, iterable $values): void
     {
-        self::assertSame(
+        $this->assertSame(
             array_combine($this->toArray($keys), $this->toArray($values)),
             $this->toArray(Iterables::combine($keys, $values)),
         );
     }
 
     #[DoesNotPerformAssertions]
-    public function testCombineDifferentLengths()
+    public function testCombineDifferentLengths(): void
     {
         /** @var array<Closure> $callables */
         $callables = [array_combine(...), Iterables::combine(...)];
@@ -155,7 +154,7 @@ class IterablesTest extends TestCase
         $valueSets = [[1, 2], [1, 2, 3]];
 
         foreach ($callables as $callable) {
-            for ($i = 0; $i < count($keySets); $i++) {
+            for ($i = 0; $i < count($keySets); ++$i) {
                 $keys = $keySets[$i];
                 $values = $valueSets[$i];
 
@@ -375,7 +374,9 @@ class IterablesTest extends TestCase
     public static function combineData(): iterable
     {
         yield [[1, 2, 3], [4, 5, 6]];
+
         yield [['1', '2'], [4, '5']];
+
         yield [['a' => 'b'], ['b' => 'c']];
     }
 
