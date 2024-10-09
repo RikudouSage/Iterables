@@ -63,3 +63,86 @@ you can still feed any iterable into it directly, which is nice.
 - `Iterables::any()` -> `array_any()`
 - `Iterables::all()` -> `array_all()`
 - `Iterables::combine()` -> `array_combine()`
+
+## Rewindable and cacheable generators
+
+There are two helper objects, `RewindableGenerator` and `CacheableGenerator`. Both solve the issue of iterating over
+a `Generator` multiple times in a different way.
+
+`RewindableGenerator` iterates over the generator over and over, while `CacheableGenerator` only traverses it once
+and afterwards caches the values in memory.
+
+`RewindableGenerator` is more useful when working with large datasets, because it only ever holds one item in memory.
+It accepts a callable argument which will be called every time the original generator is exhausted.
+
+`CacheableGenerator` accepts the `Generator` object directly and is useful if you don't care about all the values being
+held in memory at once. It's more memory-efficient if you potentially don't iterate over the whole object.
+
+### Examples
+
+#### Rewindable generator
+
+```php
+<?php
+
+use Rikudou\Iterables\Iterables;
+use Rikudou\Iterables\RewindableGenerator;
+
+$keys = ['a', 'b', 'c'];
+$values = [1, 2, 3];
+
+// notice the use of function as a first parameter, rewindable generator cannot be constructed from the raw generator
+// directly, but needs a factory that will create the generator every time it's exhausted.
+$generator = new RewindableGenerator(fn () => Iterables::combine($keys, $values));
+
+// let's iterate over the generator twice!
+for ($i = 0; $i < 2; ++$i) {
+    foreach ($generator as $key => $value) {
+        echo "{$key} => {$value},", PHP_EOL;
+    }
+}
+```
+
+When ran, this is the result:
+
+```
+a => 1,
+b => 2,
+c => 3,
+a => 1,
+b => 2,
+c => 3,
+```
+
+#### Cacheable generator
+
+```php
+<?php
+
+use Rikudou\Iterables\Iterables;
+use Rikudou\Iterables\CacheableGenerator;
+
+$keys = ['a', 'b', 'c'];
+$values = [1, 2, 3];
+
+// here we feed the raw generator directly as a parameter
+$generator = new CacheableGenerator(Iterables::combine($keys, $values));
+
+// let's iterate over the generator twice!
+for ($i = 0; $i < 2; ++$i) {
+    foreach ($generator as $key => $value) {
+        echo "{$key} => {$value},", PHP_EOL;
+    }
+}
+```
+
+When ran, this is the result:
+
+```
+a => 1,
+b => 2,
+c => 3,
+a => 1,
+b => 2,
+c => 3,
+```

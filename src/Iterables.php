@@ -288,15 +288,17 @@ final readonly class Iterables
      * @param iterable<TKey, TValue> $iterable
      * @param TPreserveKeys          $preserveKeys
      *
-     * @return (TPreserveKeys is false ? iterable<int, TValue> : iterable<TKey, TValue>)
+     * @return (TPreserveKeys is false ? Generator<int, TValue> : Generator<TKey, TValue>)
      *
      * @internal Not tested yet, not intended for public use
      */
-    public static function slice(iterable $iterable, int $offset, ?int $length = null, bool $preserveKeys = false): iterable
+    public static function slice(iterable $iterable, int $offset, ?int $length = null, bool $preserveKeys = false): Generator
     {
         if ($offset < 0) {
             // the offset is negative so we need to traverse the whole thing anyway
-            return array_slice([...$iterable], $offset, $length, $preserveKeys);
+            yield from array_slice([...$iterable], $offset, $length, $preserveKeys);
+
+            return;
         }
 
         $i = 0;
@@ -323,9 +325,9 @@ final readonly class Iterables
      * @param iterable<KeyType>   $keys
      * @param iterable<ValueType> $values
      *
-     * @return iterable<KeyType, ValueType>
+     * @return Generator<KeyType, ValueType>
      */
-    public static function combine(iterable $keys, iterable $values): iterable
+    public static function combine(iterable $keys, iterable $values): Generator
     {
         $values = self::toGenerator($values);
         foreach ($keys as $key) {
