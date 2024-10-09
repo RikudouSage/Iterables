@@ -171,6 +171,23 @@ class IterablesTest extends TestCase
         }
     }
 
+    public function testZip(): void
+    {
+        $iterable1 = [1, 2, 3];
+        $iterable2 = [4, 5, 6];
+
+        $i = 0;
+        foreach (Iterables::zip($iterable1, $iterable2) as $key => $value) {
+            $this->assertSame($i % 3, $key);
+            if ($i < 3) {
+                $this->assertSame($iterable1[$key], $value);
+            } else {
+                $this->assertSame($iterable2[$key], $value);
+            }
+            ++$i;
+        }
+    }
+
     public static function countData(): iterable
     {
         yield [[1, 2, 3]];

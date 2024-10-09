@@ -63,6 +63,7 @@ you can still feed any iterable into it directly, which is nice.
 - `Iterables::any()` -> `array_any()`
 - `Iterables::all()` -> `array_all()`
 - `Iterables::combine()` -> `array_combine()`
+- `Iterables::zip()` -> no php equivalent, simply yields from all input iterables one by one
 
 ## Rewindable and cacheable generators
 

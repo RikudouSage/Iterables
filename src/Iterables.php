@@ -345,6 +345,21 @@ final readonly class Iterables
     }
 
     /**
+     * @template KeyType
+     * @template ValueType
+     *
+     * @param iterable<KeyType, ValueType> ...$iterables
+     *
+     * @return Generator<KeyType, ValueType>
+     */
+    public static function zip(iterable ...$iterables): Generator
+    {
+        foreach ($iterables as $iterable) {
+            yield from $iterable;
+        }
+    }
+
+    /**
      * @template InputType
      *
      * @param iterable<InputType> $iterable
