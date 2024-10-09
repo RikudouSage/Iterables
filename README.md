@@ -62,3 +62,4 @@ you can still feed any iterable into it directly, which is nice.
 - `Iterables::findKey()` -> `array_find_key()`
 - `Iterables::any()` -> `array_any()`
 - `Iterables::all()` -> `array_all()`
+- `Iterables::combine()` -> `array_combine()`
