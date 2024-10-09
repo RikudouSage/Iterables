@@ -3,12 +3,19 @@
 namespace Rikudou\Tests\Iterables;
 
 use ArrayIterator;
+use Closure;
 use Countable;
 use IteratorAggregate;
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\DoesNotPerformAssertions;
+use ReflectionFunction;
+use ReflectionObject;
+use Rikudou\Iterables\CacheableGenerator;
 use Rikudou\Iterables\Iterables;
 use PHPUnit\Framework\TestCase;
+use Rikudou\Iterables\RewindableGenerator;
 use Traversable;
+use ValueError;
 
 class IterablesTest extends TestCase
 {
@@ -127,6 +134,42 @@ class IterablesTest extends TestCase
             }
         };
         $this->assertSame(6, Iterables::count($countable));
+    }
+
+    #[DataProvider('combineData')]
+    public function testCombine(iterable $keys, iterable $values)
+    {
+        self::assertSame(
+            array_combine($this->toArray($keys), $this->toArray($values)),
+            $this->toArray(Iterables::combine($keys, $values)),
+        );
+    }
+
+    #[DoesNotPerformAssertions]
+    public function testCombineDifferentLengths()
+    {
+        /** @var array<Closure> $callables */
+        $callables = [array_combine(...), Iterables::combine(...)];
+
+        $keySets = [[1, 2, 3], [1, 2]];
+        $valueSets = [[1, 2], [1, 2, 3]];
+
+        foreach ($callables as $callable) {
+            for ($i = 0; $i < count($keySets); $i++) {
+                $keys = $keySets[$i];
+                $values = $valueSets[$i];
+
+                try {
+                    $this->toArray($callable($keys, $values));
+
+                    $fn = new ReflectionFunction($callable);
+                    $name = $fn->getClosureCalledClass() ? "{$fn->getClosureCalledClass()->getShortName()}::{$fn->getName()}" : $fn->getName();
+                    $this->fail("Expected '{$name}()' to throw a ValueError for set with index {$i}");
+                } catch (ValueError) {
+                    // ignore
+                }
+            }
+        }
     }
 
     public static function countData(): iterable
@@ -314,11 +357,26 @@ class IterablesTest extends TestCase
             yield 3;
         }), static fn (int $number) => $number === 2];
 
+        yield [new CacheableGenerator((static function () {
+            yield 1;
+
+            yield 2;
+
+            yield 3;
+        })()), static fn (int $number) => $number === 2];
+
         yield [[1, 2, 3], static fn (int $number) => $number < 10];
 
         $random = random_int(0, 10);
 
         yield [[4, 5, 6], static fn (int $number) => $number < $random];
+    }
+
+    public static function combineData(): iterable
+    {
+        yield [[1, 2, 3], [4, 5, 6]];
+        yield [['1', '2'], [4, '5']];
+        yield [['a' => 'b'], ['b' => 'c']];
     }
 
     private function toArray(iterable $iterable): array

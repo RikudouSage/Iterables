@@ -1,6 +1,6 @@
 <?php
 
-namespace Rikudou\Tests\Iterables;
+namespace Rikudou\Iterables;
 
 use Closure;
 use Generator;

@@ -4,6 +4,7 @@ namespace Rikudou\Iterables;
 
 use Generator;
 use JetBrains\PhpStorm\ExpectedValues;
+use ValueError;
 
 final readonly class Iterables
 {
@@ -258,20 +259,82 @@ final readonly class Iterables
      * @template TArg
      *
      * @param iterable<TKey, TValue>|object                              $iterable
-     * @param callable(TValue, TKey, (TArg is null ? void : TArg)): void $callback
+     * @param callable(TValue, TKey, (TArg is null ? null : TArg)): void $callback
      * @param TArg                                                       $arg
      */
     public static function walk(iterable|object $iterable, callable $callback, mixed $arg = null): true
     {
+        if (!is_iterable($iterable)) {
+            $iterable = (array) $iterable;
+        }
         foreach ($iterable as $key => $value) {
             if ($arg === null) {
-                $callback($value, $key);
+                $callback($value, $key, null);
             } else {
                 $callback($value, $key, $arg);
             }
         }
 
         return true;
+    }
+
+    /**
+     * @template TKey
+     * @template TValue
+     * @template TPreserveKeys of bool
+     *
+     * @param iterable<TKey, TValue> $iterable
+     * @param TPreserveKeys $preserveKeys
+     *
+     * @return (TPreserveKeys is false ? iterable<int, TValue> : iterable<TKey, TValue>)
+     */
+    public static function slice(iterable $iterable, int $offset, ?int $length = null, bool $preserveKeys = false): iterable
+    {
+        if ($offset < 0) {
+            // the offset is negative so we need to traverse the whole thing anyway
+            return array_slice([...$iterable], $offset, $length, $preserveKeys);
+        }
+
+        $i = 0;
+        foreach ($iterable as $key => $value) {
+            if ($i < $offset) {
+                continue;
+            }
+            if ($length === 0) {
+                break;
+            }
+
+            yield ($preserveKeys ? $key : $i) => $value;
+            ++$i;
+            if ($length !== null) {
+                $length -= 1;
+            }
+        }
+    }
+
+    /**
+     * @template KeyType
+     * @template ValueType
+     *
+     * @param iterable<KeyType>   $keys
+     * @param iterable<ValueType> $values
+     *
+     * @return iterable<KeyType, ValueType>
+     */
+    public static function combine(iterable $keys, iterable $values): iterable
+    {
+        $values = self::toGenerator($values);
+        foreach ($keys as $key) {
+            if (!$values->valid()) {
+                throw new ValueError('Iterables::combine(): Argument #1 ($keys) and argument #2 ($values) must have the same number of elements');
+            }
+            yield $key => $values->current();
+            $values->next();
+        }
+
+        if ($values->valid()) {
+            throw new ValueError('Iterables::combine(): Argument #1 ($keys) and argument #2 ($values) must have the same number of elements');
+        }
     }
 
     /**
