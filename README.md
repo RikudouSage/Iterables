@@ -1,5 +1,6 @@
-A simple set of functions that reimplement the existing php array functions, but use Generators to consume as little
-memory as possible, and accept any iterable, not just array.
+A simple set of functions that reimplement PHP's built-in array functions but optimize memory usage by using Generators.
+These functions also accept any iterable, not just arrays, making them more flexible when working with large datasets 
+or data streams.
 
 So, these two are equivalent:
 
@@ -55,13 +56,21 @@ you can still feed any iterable into it directly, which is nice.
 - `Iterables::map()` -> `array_map()`
 - `Iterables::filter()` -> `array_filter()`
 - `Iterables::diff()` -> `array_diff()`
-- `Iterables::contains()` -> `in_array()` - unlike the built-in version, this is strict by default
+  - requires full traversal of the iterable
+- `Iterables::contains()` -> `in_array()` 
+  - unlike the built-in version, this is strict by default
+  - can potentially traverse the whole iterable, until a match is found
 - `Iterables::firstValue()` -> equivalent of `$array[array_key_first($array)]`
 - `Iterables::count()` -> `count()`
+  - if the iterable does not implement `Countable`, requires full traversal
 - `Iterables::find()` -> `array_find()`
+  - can potentially traverse the whole iterable, until a match is found
 - `Iterables::findKey()` -> `array_find_key()`
+  - can potentially traverse the whole iterable, until a match is found
 - `Iterables::any()` -> `array_any()`
+  - can potentially traverse the whole iterable, until a match is found
 - `Iterables::all()` -> `array_all()`
+  - can potentially traverse the whole iterable, unless any item does not match the callback earlier
 - `Iterables::combine()` -> `array_combine()`
 - `Iterables::zip()` -> no php equivalent, simply yields from all input iterables one by one
 
@@ -92,8 +101,7 @@ use Rikudou\Iterables\RewindableGenerator;
 $keys = ['a', 'b', 'c'];
 $values = [1, 2, 3];
 
-// notice the use of function as a first parameter, rewindable generator cannot be constructed from the raw generator
-// directly, but needs a factory that will create the generator every time it's exhausted.
+// RewindableGenerator requires a factory (callable) because Generator instances themselves cannot be rewound.
 $generator = new RewindableGenerator(fn () => Iterables::combine($keys, $values));
 
 // let's iterate over the generator twice!
