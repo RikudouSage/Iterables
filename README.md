@@ -117,6 +117,11 @@ c => 3,
 
 #### Cacheable generator
 
+> Note: The CacheableGenerator stores data either using the ds extension or an internal fallback class. 
+> While the fallback class works, it is not as optimized. For better performance, 
+> it's highly recommended to install the ds extension. 
+> No additional configuration is needed—the generator will automatically use the ds extension if it's available.
+
 ```php
 <?php
 
