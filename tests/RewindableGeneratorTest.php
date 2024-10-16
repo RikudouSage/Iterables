@@ -23,4 +23,19 @@ class RewindableGeneratorTest extends TestCase
         [...$instance];
         $this->assertSame(2, $calledCount);
     }
+
+    public function testCount(): void
+    {
+        $calledCount = 0;
+        $rawGeneratorFactory = static function () use (&$calledCount) {
+            yield from [1, 2, 3];
+            ++$calledCount;
+        };
+
+        $instance = new RewindableGenerator($rawGeneratorFactory);
+        $this->assertCount(3, $instance);
+        $this->assertSame(1, $calledCount);
+        $this->assertCount(3, $instance);
+        $this->assertSame(2, $calledCount);
+    }
 }

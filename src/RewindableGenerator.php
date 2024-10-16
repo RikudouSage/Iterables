@@ -3,6 +3,7 @@
 namespace Rikudou\Iterables;
 
 use Closure;
+use Countable;
 use Generator;
 use IteratorAggregate;
 use Traversable;
@@ -13,7 +14,7 @@ use Traversable;
  *
  * @implements IteratorAggregate<TKey, TValue>
  */
-final readonly class RewindableGenerator implements IteratorAggregate
+final readonly class RewindableGenerator implements IteratorAggregate, Countable
 {
     /**
      * @param Closure(): Generator<TKey, TValue> $generator
@@ -26,5 +27,15 @@ final readonly class RewindableGenerator implements IteratorAggregate
     public function getIterator(): Traversable
     {
         yield from ($this->generator)();
+    }
+
+    public function count(): int
+    {
+        $count = 0;
+        foreach ($this as $ignored) {
+            ++$count;
+        }
+
+        return $count;
     }
 }

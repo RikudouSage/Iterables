@@ -2,6 +2,7 @@
 
 namespace Rikudou\Iterables;
 
+use Countable;
 use Ds\Map;
 use Generator;
 use IteratorAggregate;
@@ -12,8 +13,10 @@ use IteratorAggregate;
  *
  * @template-implements IteratorAggregate<TKey, TValue>
  */
-final class CacheableGenerator implements IteratorAggregate
+final class CacheableGenerator implements IteratorAggregate, Countable
 {
+    private int $count = 0;
+
     private bool $exhausted = false;
 
     /**
@@ -43,6 +46,8 @@ final class CacheableGenerator implements IteratorAggregate
     {
         if (!$this->exhausted) {
             foreach ($this->generator as $key => $value) {
+                ++$this->count;
+
                 yield $key => $value;
                 $this->cache[$key] = $value;
             }
@@ -50,5 +55,14 @@ final class CacheableGenerator implements IteratorAggregate
         } else {
             yield from $this->cache;
         }
+    }
+
+    public function count(): int
+    {
+        if (!$this->exhausted) {
+            [...$this->getIterator()];
+        }
+
+        return $this->count;
     }
 }

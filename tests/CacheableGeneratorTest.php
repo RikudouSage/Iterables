@@ -23,4 +23,19 @@ class CacheableGeneratorTest extends TestCase
         [...$instance];
         $this->assertSame(1, $calledCount);
     }
+
+    public function testCount(): void
+    {
+        $calledCount = 0;
+        $rawGeneratorFactory = static function () use (&$calledCount) {
+            yield from [1, 2, 3];
+            ++$calledCount;
+        };
+
+        $instance = new CacheableGenerator($rawGeneratorFactory());
+        $this->assertCount(3, $instance);
+        $this->assertSame(1, $calledCount);
+        $this->assertCount(3, $instance);
+        $this->assertSame(1, $calledCount);
+    }
 }
