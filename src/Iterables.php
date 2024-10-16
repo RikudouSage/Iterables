@@ -360,6 +360,59 @@ final readonly class Iterables
     }
 
     /**
+     * @template ValueType
+     *
+     * @param iterable<iterable<ValueType>|object> $iterable
+     *
+     * @return Generator<ValueType>
+     */
+    public static function column(iterable $iterable, int|string|null $columnKey, int|string|null $indexKey = null): Generator
+    {
+        $i = 0;
+        foreach ($iterable as $singleIterable) {
+            if (!is_iterable($singleIterable)) {
+                $singleIterable = (array) $singleIterable;
+            }
+
+            $targetValue = null;
+            $targetKey = null;
+
+            if ($columnKey === null) {
+                $targetValue = $singleIterable;
+                if ($indexKey !== null) {
+                    foreach ($singleIterable as $key => $value) {
+                        if ($key === $indexKey) {
+                            $targetKey = $value;
+                            break;
+                        }
+                    }
+                }
+            } else {
+                foreach ($singleIterable as $key => $value) {
+                    if ($key === $columnKey) {
+                        $targetValue = $value;
+                    }
+                    if ($key === $indexKey) {
+                        $targetKey = $value;
+                    }
+                }
+            }
+
+            if ($targetValue === null) {
+                continue;
+            }
+
+            if (is_numeric($targetKey)) {
+                $i = $targetKey + 1;
+            }
+
+            $targetKey ??= $i++;
+
+            yield $targetKey => $targetValue;
+        }
+    }
+
+    /**
      * @template InputType
      *
      * @param iterable<InputType> $iterable

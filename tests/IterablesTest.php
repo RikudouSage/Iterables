@@ -188,6 +188,125 @@ class IterablesTest extends TestCase
         }
     }
 
+    #[DataProvider('columnData')]
+    public function testColumn(iterable $iterable, int|string|null $columnKey, int|string|null $indexKey = null): void
+    {
+        $this->assertSame(
+            array_column($this->toArray($iterable), $columnKey, $indexKey),
+            $this->toArray(Iterables::column($iterable, $columnKey, $indexKey)),
+        );
+    }
+
+    public static function columnData(): iterable
+    {
+        $array = [
+            [
+                'name' => 'test',
+                'age' => 22,
+                'eyeColor' => 'brown',
+            ],
+            [
+                'age' => 23,
+                'eyeColor' => 'gray',
+            ],
+            [
+                'name' => 'test',
+                'eyeColor' => 'blue',
+            ],
+        ];
+
+        yield [$array, 'name'];
+
+        yield [$array, 'age'];
+
+        yield [$array, 'eyeColor'];
+
+        yield [$array, null];
+
+        yield [$array, null, 'name'];
+
+        yield [$array, null, 'age'];
+
+        yield [$array, null, 'eyeColor'];
+
+        yield [$array, 'name', 'name'];
+
+        yield [$array, 'name', 'age'];
+
+        yield [$array, 'name', 'eyeColor'];
+
+        yield [$array, 'age', 'name'];
+
+        yield [$array, 'age', 'age'];
+
+        yield [$array, 'age', 'eyeColor'];
+
+        yield [$array, 'eyeColor', 'name'];
+
+        yield [$array, 'eyeColor', 'age'];
+
+        yield [$array, 'eyeColor', 'eyeColor'];
+
+        yield [$array, 0, 0];
+
+        $array = [
+            [1, 2, 3],
+            [4, 5, 6],
+            [7, 8, 9],
+        ];
+
+        yield [$array, 0];
+
+        yield [$array, 1];
+
+        yield [$array, 2];
+
+        yield [$array, null, 0];
+
+        yield [$array, null, 1];
+
+        yield [$array, null, 2];
+
+        yield [$array, 0, 0];
+
+        yield [$array, 0, 1];
+
+        yield [$array, 0, 2];
+
+        yield [$array, 1, 0];
+
+        yield [$array, 1, 1];
+
+        yield [$array, 1, 2];
+
+        yield [$array, 2, 0];
+
+        yield [$array, 2, 1];
+
+        yield [$array, 2, 2];
+
+        $array = [
+            new class () {
+                public string $name = 'test';
+
+                public int $age = 22;
+
+                public string $eyeColor = 'brown';
+            },
+            new class () {
+                public int $age = 22;
+
+                public string $eyeColor = 'gray';
+            },
+        ];
+
+        yield [$array, 'name'];
+
+        yield [$array, 'age'];
+
+        yield [$array, 'eyeColor'];
+    }
+
     public static function countData(): iterable
     {
         yield [[1, 2, 3]];
