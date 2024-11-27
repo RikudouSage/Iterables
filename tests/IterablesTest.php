@@ -197,6 +197,38 @@ class IterablesTest extends TestCase
         );
     }
 
+    #[DataProvider('reverseData')]
+    public function testReverse(iterable $iterable, bool $preserveKeys): void
+    {
+        $this->assertSame(
+            array_reverse($this->toArray($iterable), $preserveKeys),
+            $this->toArray(Iterables::reverse($iterable, $preserveKeys)),
+        );
+    }
+
+    public static function reverseData(): iterable
+    {
+        yield [
+            [1, 2, 3],
+            false,
+        ];
+
+        yield [
+            [1, 2, 3],
+            true,
+        ];
+
+        yield [
+            ['a' => 'b', 'c' => 'd', 'e' => 'f'],
+            false,
+        ];
+
+        yield [
+            ['a' => 'b', 'c' => 'd', 'e' => 'f'],
+            true,
+        ];
+    }
+
     public static function columnData(): iterable
     {
         $array = [

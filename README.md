@@ -73,6 +73,8 @@ you can still feed any iterable into it directly, which is nice.
   - can potentially traverse the whole iterable, unless any item does not match the callback earlier
 - `Iterables::combine()` -> `array_combine()`
 - `Iterables::zip()` -> no php equivalent, simply yields from all input iterables one by one
+- `Iterables::reverse()` -> `array_reverse()`
+  - requires full traversal of the iterable
 
 ## Rewindable and cacheable generators
 

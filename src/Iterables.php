@@ -413,6 +413,35 @@ final readonly class Iterables
     }
 
     /**
+     * @template TKey
+     * @template TValue
+     * @template TPreserveKeys of bool
+     *
+     * @param iterable<TKey, TValue> $iterable
+     * @param TPreserveKeys          $preserveKeys
+     *
+     * @return (TPreserveKeys is false ? Generator<int, TValue> : Generator<TKey, TValue>)
+     */
+    public static function reverse(iterable $iterable, bool $preserveKeys = false): Generator
+    {
+        $cache = [];
+        $isList = true;
+        $i = 0;
+        foreach ($iterable as $key => $value) {
+            $isList = $isList && $key === $i++;
+            $cache[] = [
+                'key' => $key,
+                'value' => $value,
+            ];
+        }
+
+        $i = 0;
+        foreach (array_reverse($cache) as $item) {
+            yield ($preserveKeys || !$isList ? $item['key'] : $i++) => $item['value'];
+        }
+    }
+
+    /**
      * @template InputType
      *
      * @param iterable<InputType> $iterable
