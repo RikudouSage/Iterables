@@ -420,7 +420,15 @@ final readonly class Iterables
      * @param iterable<TKey, TValue> $iterable
      * @param TPreserveKeys          $preserveKeys
      *
-     * @return (TPreserveKeys is false ? Generator<int, TValue> : Generator<TKey, TValue>)
+     * @return (
+     *      TPreserveKeys is true
+     *          ? Generator<TKey, TValue>
+     *      : (
+     *          iterable<TKey, TValue> is list<TValue>
+     *          ? Generator<int, TValue>
+     *          : Generator<TKey, TValue>
+     *        )
+     *  )
      */
     public static function reverse(iterable $iterable, bool $preserveKeys = false): Generator
     {
