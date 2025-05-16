@@ -450,6 +450,32 @@ final readonly class Iterables
     }
 
     /**
+     * @template TKey of string|mixed
+     * @template TValue of mixed
+     *
+     * @param iterable<TKey, TValue> $iterable
+     * @param int $case
+     * @return (TKey is string ? Generator<string, TValue> : Generator<TKey, TValue>)
+     */
+    public static function changeKeyCase(
+        iterable $iterable,
+        #[ExpectedValues(values: [CASE_LOWER, CASE_UPPER])]
+        int $case = CASE_LOWER,
+    ): Generator {
+        $fn = $case === CASE_LOWER
+            ? strtolower(...)
+            : strtoupper(...);
+
+        foreach ($iterable as $key => $value) {
+            if (is_string($key)) {
+                $key = $fn($key);
+            }
+
+            yield $key => $value;
+        }
+    }
+
+    /**
      * @template InputType
      *
      * @param iterable<InputType> $iterable

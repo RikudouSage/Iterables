@@ -13,6 +13,7 @@ use Rikudou\Iterables\CacheableGenerator;
 use Rikudou\Iterables\Iterables;
 use PHPUnit\Framework\TestCase;
 use Rikudou\Iterables\RewindableGenerator;
+use stdClass;
 use Traversable;
 use ValueError;
 
@@ -205,6 +206,68 @@ class IterablesTest extends TestCase
             $this->toArray(Iterables::reverse($iterable, $preserveKeys)),
         );
     }
+
+    #[DataProvider('changeKeyCaseData')]
+    public function testChangeKeyCase(iterable $iterable, int $case)
+    {
+        $this->assertSame(
+            array_change_key_case($this->toArray($iterable), $case),
+            $this->toArray(Iterables::changeKeyCase($iterable, $case)),
+        );
+    }
+
+    public function testChangeKeyCaseObjKey(): void
+    {
+        $iterable = fn () => yield new stdClass() => "hello";
+        self::assertInstanceOf(
+            stdClass::class,
+            Iterables::changeKeyCase($iterable())->key(),
+        );
+    }
+
+    public static function changeKeyCaseData(): iterable
+    {
+        yield 'lowercase simple' => [
+            ['Foo' => 1, 'BAR' => 2, 'BaZ' => 3],
+            CASE_LOWER,
+        ];
+
+        yield 'uppercase simple' => [
+            ['foo' => 1, 'bar' => 2, 'baz' => 3],
+            CASE_UPPER,
+        ];
+
+        yield 'mixed with int key' => [
+            [1 => 'a', 'Foo' => 'b', 2 => 'c', 'BAR' => 'd'],
+            CASE_LOWER,
+        ];
+
+        yield 'already lowercase' => [
+            ['foo' => 1, 'bar' => 2],
+            CASE_LOWER,
+        ];
+
+        yield 'already uppercase' => [
+            ['FOO' => 1, 'BAR' => 2],
+            CASE_UPPER,
+        ];
+
+        yield 'empty array' => [
+            [],
+            CASE_LOWER,
+        ];
+
+        yield 'numeric strings' => [
+            ['123' => 'a', 'ABC' => 'b'],
+            CASE_LOWER,
+        ];
+
+        yield 'empty' => [
+            [],
+            CASE_LOWER,
+        ];
+    }
+
 
     public static function reverseData(): iterable
     {
