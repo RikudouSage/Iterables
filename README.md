@@ -75,6 +75,7 @@ you can still feed any iterable into it directly, which is nice.
 - `Iterables::zip()` -> no php equivalent, simply yields from all input iterables one by one
 - `Iterables::reverse()` -> `array_reverse()`
   - requires full traversal of the iterable
+- `Iterables::changeKeyCase()` -> `array_change_key_case()`
 
 ## Rewindable and cacheable generators
 
